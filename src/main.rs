@@ -1,0 +1,28 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Deserialize)]
+struct LoginResponse {
+    token: String
+}
+
+#[derive(Serialize)]
+struct Notizia {
+    giornale: String,
+    titolo: String,
+    comune: String,
+    contenuto: String,
+    data: String
+}
+
+async fn effettua_login(client: &reqwest::Client) -> Result<String, Box<dyn std::error::Error>> {
+    let user = serde_json::json!({
+        "email": "admin@gmail.com",
+        "password": "admin"
+    });
+    let res = client.post("http://identity_service:8080/api/login").json(&user).send().await?.json::<LoginResponse>().await?;
+    Ok(res.token)
+}
+
+fn main() {
+    println!("Hello, world!");
+}
