@@ -23,6 +23,14 @@ async fn effettua_login(client: &reqwest::Client) -> Result<String, Box<dyn std:
     Ok(res.token)
 }
 
+async fn inserisci_notizia(client: &reqwest::Client, news: Notizia, token: &str) -> Result<(), Box<dyn std::error::Error>> {
+    client.post("http://notizie_service:8081/api/notizie")
+        .bearer_auth(token)
+        .json(notizia)
+        .send().await?;
+    Ok(())
+}
+
 fn main() {
     println!("Hello, world!");
 }
