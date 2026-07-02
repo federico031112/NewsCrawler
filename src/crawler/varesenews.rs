@@ -1,5 +1,7 @@
 use serde::Serialize;
 use crate::service_management::news::Notizia;
+use feed_rs::parser;
+use chrono::{Utc, Duration};
 
 
 pub async fn get_news_from_varesenews (client: &reqwest::Client) -> Vec<Notizia> {
@@ -19,14 +21,24 @@ pub async fn get_news_from_varesenews (client: &reqwest::Client) -> Vec<Notizia>
                 }
             })
             .map(|entry| {
+                let titolo = entry.title.map(|t| t.content).unwrap_or_default();
+                let comune = estrai_comune(&titolo);
+
                 Notizia {
                     giornale: "VareseNews".to_string(),
-                    titolo: entry.title.map(|t| t.content).unwrap_or_default(),
-                    comune: "Varese".to_string(),
-                    contenuto: entry.summary.map(|s| s.content).unwrap_or_default(),
+                    titolo: titolo,
+                    comune: comune,
+                    contenuto: entry.description.map(|s| s.content).unwrap_or_default(),
                     data: entry.published.map(|d| d.to_rfc3339()).unwrap_or_default(),
                 }
             }).collect();
     }
     vec![]
+}
+
+fn estrai_comune (titolo: &str) -> String {
+        if let Some(pos) = titolo.find(" - ") {
+        return titolo[..pos].trim().to_string();
+    }
+    "".to_string()
 }
