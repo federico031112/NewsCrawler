@@ -1,4 +1,3 @@
-use serde::Serialize;
 use crate::service_management::news::Notizia;
 use feed_rs::parser;
 use chrono::{Utc, Duration};
@@ -28,7 +27,7 @@ pub async fn get_news_from_varesenews (client: &reqwest::Client) -> Vec<Notizia>
                     giornale: "VareseNews".to_string(),
                     titolo: titolo,
                     comune: comune,
-                    contenuto: entry.description.map(|s| s.content).unwrap_or_default(),
+                    contenuto: entry.content.map(|s| s.body).unwrap_or_default().unwrap_or_default(),
                     data: entry.published.map(|d| d.to_rfc3339()).unwrap_or_default(),
                 }
             }).collect();

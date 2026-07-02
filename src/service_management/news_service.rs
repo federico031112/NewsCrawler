@@ -1,4 +1,4 @@
-use serde::{Deserialize,Serialize};
+use serde::{Deserialize};
 use super::news::Notizia;
 
 #[derive(Deserialize)]
@@ -16,10 +16,10 @@ pub async fn effettua_login(client: &reqwest::Client) -> Result<String, Box<dyn 
     Ok(res.token)
 }
 
-pub async fn inserisci_notizia(client: &reqwest::Client, news: Notizia, token: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn inserisci_notizia(client: &reqwest::Client, news: &Notizia, token: &str) -> Result<(), Box<dyn std::error::Error>> {
     client.post("http://notizie_service:8081/api/notizie")
         .bearer_auth(token)
-        .json(notizia)
+        .json(&news)
         .send().await?;
     Ok(())
 }
